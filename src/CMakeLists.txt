@@ -1,5 +1,7 @@
 add_executable(${CMAKE_PROJECT_NAME} WIN32
     main.cpp
+    window.cpp
+    renderer.cpp
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
