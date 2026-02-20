@@ -1,7 +1,7 @@
 #ifndef APP_H_
 #define APP_H_
 
-#include "timer.h"
+#include "session.h"
 
 enum class AppMode {
     Idle,       // no session running, mini window hidden
@@ -12,7 +12,7 @@ enum class AppMode {
 
 struct AppState {
     AppMode mode = AppMode::Idle;
-    Timer timer;
+    Session session;
 };
 
 extern AppState g_app;

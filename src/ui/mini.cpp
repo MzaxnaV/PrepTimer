@@ -43,7 +43,7 @@ void RenderMiniWindow()
     // Timer font for the numbers
     ImGui::PushFont(Theme::FontTimer);
 
-    ImGui::Text("%s", FormatTime(g_app.timer.ElapsedMs()));
+    ImGui::Text("%s", FormatTime(g_app.session.timer.ElapsedMs()));
 
     ImGui::PopFont();
 
@@ -52,7 +52,9 @@ void RenderMiniWindow()
     // avg label in regular font
     ImGui::PushFont(Theme::FontUI);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8.0f); // vertically center against timer font
-    ImGui::TextDisabled("avg %s", FormatTime(g_app.timer.AverageLapMs()));
+    ImGui::TextDisabled("avg %s | %s",
+        FormatTime(g_app.session.timer.AverageLapMs()),
+        SectionName(g_app.session.current_section));
     ImGui::PopFont();
 
     // Click anywhere on mini window to expand

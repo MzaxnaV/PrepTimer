@@ -33,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
-    g_app.timer.Start(); // TODO: remove this
+    g_app.session.timer.Start(); // TODO: remove this
 
 
     // -----------------------------------------------------------------------
@@ -52,7 +52,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
             break;
 
         if (ImGui::IsKeyPressed(ImGuiKey_L, false))
-            g_app.timer.RecordLap();
+            g_app.session.timer.RecordLap();
 
         // Start ImGui frame
         ImGui_ImplDX11_NewFrame();

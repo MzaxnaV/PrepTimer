@@ -6,6 +6,7 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32
     ui/mini.cpp
     app.cpp
     timer.cpp
+    session.cpp
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
