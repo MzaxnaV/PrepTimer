@@ -7,6 +7,7 @@
 
 #include "renderer.h"
 #include "window.h"
+#include "ui/theme.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 
@@ -20,12 +21,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     // ImGui init
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    Theme::Apply();
+
     ImPlot::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-    ImGui::StyleColorsDark(); // replace this with custom theme later
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
@@ -69,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 
     DestroyWindow(hwnd);
     ShutdownD3D();
-    ShutdownWindow(hInstance);
+    ShutdownWindow();
 
     return 0;
 }

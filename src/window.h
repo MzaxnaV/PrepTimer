@@ -4,6 +4,6 @@
 #include <windows.h>
 
 HWND InitWindow(HINSTANCE hInstance, int width, int height, const wchar_t* title);
-void ShutdownWindow(HINSTANCE hInstance);
+void ShutdownWindow();
 
 #endif // WINDOW_H_

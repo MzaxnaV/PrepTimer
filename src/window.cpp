@@ -50,4 +50,4 @@ HWND InitWindow(HINSTANCE hInstance, int width, int height, const wchar_t* title
     return hwnd;
 }
 
-void ShutdownWindow(HINSTANCE hInstance) { UnregisterClassW(g_wc.lpszClassName, g_wc.hInstance); }
+void ShutdownWindow() { UnregisterClassW(g_wc.lpszClassName, g_wc.hInstance); }
