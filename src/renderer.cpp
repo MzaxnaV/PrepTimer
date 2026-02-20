@@ -97,3 +97,4 @@ void OnWindowResize(UINT width, UINT height) {
 
 ID3D11Device* GetDevice() { return g_pd3dDevice; }
 ID3D11DeviceContext* GetContext() { return g_pd3dDeviceContext; }
+ID3D11RenderTargetView** GetRenderTarget() { return &g_mainRenderTarget; }

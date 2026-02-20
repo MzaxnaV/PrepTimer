@@ -22,11 +22,9 @@ void RenderMiniWindow()
     constexpr float H = 56.0f;
 
     // Position: bottom-left, just above taskbar
-    // ImGui::SetNextWindowPos(ImVec2(screenRight - W - 8.0f, screenBottom - H - 32.0f),
-    //                         ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(screenRight - W - 8.0f, screenBottom - H - 32.0f),
+                            ImGuiCond_Always);
 
-    // Position: middle temp.
-    ImGui::SetNextWindowPos(ImVec2(screenRight/2 - W, screenBottom/2 - H), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(W, H), ImGuiCond_Always);
     ImGui::SetNextWindowBgAlpha(0.92f);
 
@@ -39,6 +37,20 @@ void RenderMiniWindow()
         ImGuiWindowFlags_NoBringToFrontOnFocus   |
         ImGuiWindowFlags_NoNav                   |
         ImGuiWindowFlags_NoDocking;
+
+    
+    // Force this viewport's native window to stay topmost
+    ImGuiViewport* viewport = ImGui::GetWindowViewport();
+    if (viewport && viewport->PlatformHandle) {
+        HWND miniHwnd = (HWND)viewport->PlatformHandle;
+
+        // Set extended style to topmost — more persistent than SetWindowPos alone
+        SetWindowLong(miniHwnd, GWL_EXSTYLE,
+            GetWindowLong(miniHwnd, GWL_EXSTYLE) | WS_EX_TOPMOST);
+
+        SetWindowPos(miniHwnd, HWND_TOPMOST, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    }
 
     ImGui::Begin("##mini", nullptr, flags);
 

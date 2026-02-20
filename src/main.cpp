@@ -87,6 +87,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
 
+        GetContext()->OMSetRenderTargets(1, GetRenderTarget(), nullptr);
+
         EndFrame();
     }
 
