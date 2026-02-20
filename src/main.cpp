@@ -8,6 +8,8 @@
 #include "renderer.h"
 #include "window.h"
 #include "ui/theme.h"
+#include "ui/mini.h"
+#include "app.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 
@@ -31,6 +33,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
+    g_app.timer.Start();
+
+
     // -----------------------------------------------------------------------
     // Main loop
     // -----------------------------------------------------------------------
@@ -52,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         ImGui::NewFrame();
 
         // ---- UI goes here ---------
-        ImGui::ShowDemoWindow(); // TODO: remove later, just to verify everything works
+        RenderMiniWindow(); // TODO: remove later, just to verify everything works
         // ---------------------------
 
         // Render

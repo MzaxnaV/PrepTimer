@@ -7,6 +7,7 @@
 #include "renderer.h"
 
 static WNDCLASSEXW g_wc = {};
+static HWND g_hwnd = nullptr;
 
 // -----------------------------------------------------------------------
 // Win32 message handler
@@ -44,10 +45,17 @@ HWND InitWindow(HINSTANCE hInstance, int width, int height, const wchar_t* title
             .lpszClassName = L"PrepTimer"};
     RegisterClassExW(&g_wc);
 
-    HWND hwnd = CreateWindowW(g_wc.lpszClassName, title, WS_OVERLAPPEDWINDOW, 100, 100, width,
+    g_hwnd = CreateWindowW(g_wc.lpszClassName, title, WS_OVERLAPPEDWINDOW, 100, 100, width,
                               height, nullptr, nullptr, g_wc.hInstance, nullptr);
 
-    return hwnd;
+    return g_hwnd;
 }
 
-void ShutdownWindow() { UnregisterClassW(g_wc.lpszClassName, g_wc.hInstance); }
+void ShutdownWindow() { 
+    UnregisterClassW(g_wc.lpszClassName, g_wc.hInstance); 
+}
+
+void SetWindowTopmost(bool topmost){
+    HWND order = topmost ? HWND_TOPMOST : HWND_NOTOPMOST;
+    SetWindowPos(g_hwnd, order, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+}

@@ -3,6 +3,9 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32
     window.cpp
     renderer.cpp
     ui/theme.cpp
+    ui/mini.cpp
+    app.cpp
+    timer.cpp
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
