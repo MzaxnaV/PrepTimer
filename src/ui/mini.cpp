@@ -22,8 +22,11 @@ void RenderMiniWindow()
     constexpr float H = 56.0f;
 
     // Position: bottom-left, just above taskbar
-    ImGui::SetNextWindowPos(ImVec2(screenRight - W - 8.0f, screenBottom - H - 32.0f),
-                            ImGuiCond_Always);
+    // ImGui::SetNextWindowPos(ImVec2(screenRight - W - 8.0f, screenBottom - H - 32.0f),
+    //                         ImGuiCond_Always);
+
+    // Position: middle temp.
+    ImGui::SetNextWindowPos(ImVec2(screenRight/2 - W, screenBottom/2 - H), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(W, H), ImGuiCond_Always);
     ImGui::SetNextWindowBgAlpha(0.92f);
 
@@ -49,7 +52,7 @@ void RenderMiniWindow()
     // avg label in regular font
     ImGui::PushFont(Theme::FontUI);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8.0f); // vertically center against timer font
-    ImGui::TextDisabled("avg 01:45");
+    ImGui::TextDisabled("avg %s", FormatTime(g_app.timer.AverageLapMs()));
     ImGui::PopFont();
 
     // Click anywhere on mini window to expand
