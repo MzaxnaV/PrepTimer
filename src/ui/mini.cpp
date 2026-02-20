@@ -31,12 +31,14 @@ void RenderMiniWindow()
     ImGui::SetNextWindowBgAlpha(0.92f);
 
     ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoTitleBar        |
-        ImGuiWindowFlags_NoResize          |
-        ImGuiWindowFlags_NoScrollbar       |
-        ImGuiWindowFlags_NoMove            |
-        ImGuiWindowFlags_NoSavedSettings   |
-        ImGuiWindowFlags_NoBringToFrontOnFocus;
+        ImGuiWindowFlags_NoTitleBar              |
+        ImGuiWindowFlags_NoResize                |
+        ImGuiWindowFlags_NoScrollbar             |
+        ImGuiWindowFlags_NoMove                  |
+        ImGuiWindowFlags_NoSavedSettings         |
+        ImGuiWindowFlags_NoBringToFrontOnFocus   |
+        ImGuiWindowFlags_NoNav                   |
+        ImGuiWindowFlags_NoDocking;
 
     ImGui::Begin("##mini", nullptr, flags);
 

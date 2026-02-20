@@ -9,6 +9,7 @@
 #include "window.h"
 #include "ui/theme.h"
 #include "ui/mini.h"
+#include "ui/session_view.h"
 #include "app.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
@@ -29,12 +30,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
-
-    g_app.session.timer.Start(); // TODO: remove this
-
 
     // -----------------------------------------------------------------------
     // Main loop
@@ -51,8 +50,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         if (done)
             break;
 
-        if (ImGui::IsKeyPressed(ImGuiKey_L, false))
-            g_app.session.timer.RecordLap();
+        if (g_app.mode == AppMode::Running || g_app.mode == AppMode::Paused) {
+            if (ImGui::IsKeyPressed(ImGuiKey_L, false))
+                g_app.session.timer.RecordLap();
+
+            if (ImGui::IsKeyPressed(ImGuiKey_P, false)) {
+                if (g_app.mode == AppMode::Paused) {
+                    g_app.session.timer.Resume();
+                    g_app.mode = AppMode::Running;
+                } else {
+                    g_app.session.timer.Pause();
+                    g_app.mode = AppMode::Paused;
+                }
+            }
+        }
 
         // Start ImGui frame
         ImGui_ImplDX11_NewFrame();
@@ -60,6 +71,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         ImGui::NewFrame();
 
         // ---- UI goes here ---------
+        if (g_app.mode == AppMode::Idle)
+            RenderSessionStart();
+        else if (g_app.mode == AppMode::Expanded)
+            RenderSessionActive();
         RenderMiniWindow(); // TODO: remove later, just to verify everything works
         // ---------------------------
 
@@ -67,6 +82,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         ImGui::Render();
         BeginFrame(0.1f, 0.1f, 0.1f);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+        // Multi-viewport rendering
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+
         EndFrame();
     }
 

@@ -11,7 +11,8 @@ enum class AppMode {
 };
 
 struct AppState {
-    AppMode mode = AppMode::Idle;
+    AppMode mode         = AppMode::Idle;
+    AppMode mode_before_expand = AppMode::Idle;
     Session session;
 };
 

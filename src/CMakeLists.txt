@@ -4,6 +4,7 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32
     renderer.cpp
     ui/theme.cpp
     ui/mini.cpp
+    ui/session_view.cpp
     app.cpp
     timer.cpp
     session.cpp

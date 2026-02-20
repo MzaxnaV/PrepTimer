@@ -10,7 +10,7 @@ void Timer::Start() {
 
 void Timer::Pause() {
     if (!running) return;
-    m_accumulated_ms += ElapsedMs();
+    m_accumulated_ms = ElapsedMs();
     running = false;
 }
 
