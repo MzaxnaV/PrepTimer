@@ -78,6 +78,7 @@ void SetWindowMode(AppMode mode)
         SetWindowLongW(g_hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
         SetWindowLongW(g_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST);
         SetWindowPos(g_hwnd, HWND_TOPMOST, x, y, W, H, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+        SetWindowRgn(g_hwnd, CreateRoundRectRgn(0, 0, W + 1, H + 1, 16, 16), TRUE);
     } else {
         // Idle or Expanded: standard window with title bar
         int cw = (mode == AppMode::Expanded) ? 660 : 440;
@@ -99,5 +100,6 @@ void SetWindowMode(AppMode mode)
         SetWindowLongW(g_hwnd, GWL_STYLE, style);
         SetWindowLongW(g_hwnd, GWL_EXSTYLE, exStyle);
         SetWindowPos(g_hwnd, HWND_NOTOPMOST, x, y, w, h, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+        SetWindowRgn(g_hwnd, nullptr, TRUE);
     }
 }
