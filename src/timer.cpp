@@ -58,12 +58,10 @@ uint32_t Timer::AverageLapMs() const
     return total / static_cast<uint32_t>(laps.size());
 }
 
-const char* FormatTime(uint32_t ms)
+StrBuf FormatTime(uint32_t ms)
 {
-    static char buf[16];
+    StrBuf buf = {};
     uint32_t total_s = ms / 1000;
-    uint32_t minutes = total_s / 60;
-    uint32_t seconds = total_s % 60;
-    std::snprintf(buf, sizeof(buf), "%02u:%02u", minutes, seconds);
+    std::snprintf(buf.data, sizeof(buf.data), "%02u:%02u", total_s / 60, total_s % 60);
     return buf;
 }

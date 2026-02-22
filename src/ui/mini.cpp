@@ -8,7 +8,7 @@ void RenderMiniContent()
 {
     // Timer — large monospace font
     ImGui::PushFont(Theme::FontTimer);
-    ImGui::Text("%s", FormatTime(g_app.session.timer.ElapsedMs()));
+    ImGui::Text("%s", FormatTime(g_app.session.timer.ElapsedMs()).data);
     ImGui::PopFont();
 
     ImGui::SameLine();
@@ -17,7 +17,7 @@ void RenderMiniContent()
     ImGui::PushFont(Theme::FontUI);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8.0f);
     ImGui::TextDisabled("avg %s | %s",
-        FormatTime(g_app.session.timer.AverageLapMs()),
+        FormatTime(g_app.session.timer.AverageLapMs()).data,
         SectionName(g_app.session.current_section));
     ImGui::PopFont();
 

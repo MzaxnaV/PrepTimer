@@ -3,7 +3,7 @@
 
 #include <d3d11.h>
 
-bool InitD3D(HWND hwnd);
+[[nodiscard]] bool InitD3D(HWND hwnd);
 void ShutdownD3D();
 void BeginFrame(float r, float g, float b);
 void OnWindowResize(UINT width, UINT height);

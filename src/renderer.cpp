@@ -41,7 +41,7 @@ void CleanupDeviceD3D()
     }
 }
 
-bool CreateDeviceD3D(HWND hWnd)
+[[nodiscard]] bool CreateDeviceD3D(HWND hWnd)
 {
     DXGI_SWAP_CHAIN_DESC sd = {
         .BufferDesc   = {.Width = 0, .Height = 0, .Format = DXGI_FORMAT_R8G8B8A8_UNORM},
