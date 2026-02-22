@@ -1,33 +1,68 @@
 #include "theme.h"
+#include "../resource.h"
 #include "imgui.h"
+
+#include <windows.h>
+
+namespace {
+
+// Returns a pointer into the exe's mapped image for the given RCDATA resource.
+// out_size receives the byte count. Returns nullptr on failure.
+static void* ResData(int id, int& out_size)
+{
+    HRSRC   hRes = FindResourceW(nullptr, MAKEINTRESOURCEW(id), reinterpret_cast<LPCWSTR>(RT_RCDATA));
+    if (!hRes) return nullptr;
+    HGLOBAL hMem = ::LoadResource(nullptr, hRes);
+    if (!hMem) return nullptr;
+    out_size = static_cast<int>(SizeofResource(nullptr, hRes));
+    return LockResource(hMem);
+}
+
+} // namespace
 
 namespace Theme {
 
-ImFont* FontUI     = nullptr;
-ImFont* FontUIBold = nullptr;
-ImFont* FontTimer  = nullptr;
+ImFont* FontUI      = nullptr;
+ImFont* FontUIBold  = nullptr;
+ImFont* FontTimer   = nullptr;
+ImFont* FontTimerSm = nullptr;
 
 void Apply()
 {
-    // Fonts
+    // Fonts — loaded from embedded RCDATA resources (no external files required)
     ImGuiIO& io = ImGui::GetIO();
 
+    // FontDataOwnedByAtlas = false: the data lives in the exe image, ImGui must not free it.
+    ImFontConfig cfg;
+    cfg.FontDataOwnedByAtlas = false;
+
+    int sz = 0;
+
     // Base UI font — Inter Regular at 16px
-    FontUI = io.Fonts->AddFontFromFileTTF("assets/fonts/Inter-Regular.ttf", 16.0f);
+    if (void* d = ResData(IDR_FONT_INTER_REGULAR, sz))
+        FontUI = io.Fonts->AddFontFromMemoryTTF(d, sz, 16.0f, &cfg);
 
     // Bold variant for labels and headings
-    FontUIBold = io.Fonts->AddFontFromFileTTF("assets/fonts/Inter-Bold.ttf", 16.0f);
+    if (void* d = ResData(IDR_FONT_INTER_BOLD, sz))
+        FontUIBold = io.Fonts->AddFontFromMemoryTTF(d, sz, 16.0f, &cfg);
 
-    // Timer font — JetBrains Mono, larger for the mini widget
-    FontTimer = io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono-Regular.ttf", 32.0f);
+    // Timer font — JetBrains Mono Bold, larger for the mini widget
+    if (void* d = ResData(IDR_FONT_JETBRAINS_MONO_BOLD, sz))
+        FontTimer = io.Fonts->AddFontFromMemoryTTF(d, sz, 40.0f, &cfg);
 
-    // Fallback to default if font files not found
+    // Small mono font — JetBrains Mono Bold at 16px for avg time in mini
+    if (void* d = ResData(IDR_FONT_JETBRAINS_MONO_BOLD, sz))
+        FontTimerSm = io.Fonts->AddFontFromMemoryTTF(d, sz, 16.0f, &cfg);
+
+    // Fallback to default if resource loading fails
     if (!FontUI)
         FontUI = io.Fonts->AddFontDefault();
     if (!FontUIBold)
         FontUIBold = io.Fonts->AddFontDefault();
     if (!FontTimer)
         FontTimer = io.Fonts->AddFontDefault();
+    if (!FontTimerSm)
+        FontTimerSm = io.Fonts->AddFontDefault();
 
     // Colors
     ImVec4* colors = ImGui::GetStyle().Colors;

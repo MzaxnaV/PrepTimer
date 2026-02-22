@@ -1,3 +1,10 @@
+# Generate resources.rc with absolute paths so rc.exe finds the asset files
+# regardless of build directory location.
+configure_file(
+    "${CMAKE_SOURCE_DIR}/resources.rc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/resources.rc"
+)
+
 add_executable(${CMAKE_PROJECT_NAME} WIN32
     main.cpp
     window.cpp
@@ -8,6 +15,7 @@ add_executable(${CMAKE_PROJECT_NAME} WIN32
     app.cpp
     timer.cpp
     session.cpp
+    "${CMAKE_CURRENT_BINARY_DIR}/resources.rc"
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -24,9 +32,3 @@ if (MSVC)
 else()
     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/assets
-)

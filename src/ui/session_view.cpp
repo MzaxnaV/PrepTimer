@@ -147,7 +147,7 @@ void RenderSessionActive()
         }
     }
 
-    if (ImGui::Button("Minimize", ImVec2(100, 32)))
+    if (ImGui::Button("Mini", ImVec2(100, 32)))
         ToggleExpanded();
 
     ImGui::SameLine();
