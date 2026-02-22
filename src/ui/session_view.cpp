@@ -2,21 +2,17 @@
 #include "theme.h"
 #include "../app.h"
 #include "../session.h"
+
 #include "imgui.h"
-#include "../window.h"
 
 #include <cstring>
 
 // Persistent input buffers
-static char  s_name_buf[128]    = {};
-static char  s_tag_buf[64]      = {};
+static char s_name_buf[128] = {};
+static char s_tag_buf[64]   = {};
 
 void RenderSessionStart()
 {
-    ImGui::SetNextWindowPos(ImVec2(400, 200), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(420, 320), ImGuiCond_Once);
-    ImGui::Begin("New Session");
-
     ImGui::PushFont(Theme::FontUIBold);
     ImGui::Text("Session Name");
     ImGui::PopFont();
@@ -51,7 +47,6 @@ void RenderSessionStart()
     ImGui::Separator();
     ImGui::Spacing();
 
-    // Target time
     ImGui::PushFont(Theme::FontUIBold);
     ImGui::Text("Target per question");
     ImGui::PopFont();
@@ -66,20 +61,18 @@ void RenderSessionStart()
 
     ImGui::Spacing();
 
-    bool can_start = s_name_buf[0] != '\0';  // name is required
+    bool can_start = s_name_buf[0] != '\0';
     if (!can_start) ImGui::BeginDisabled();
 
     if (ImGui::Button("Start Session", ImVec2(-1, 36))) {
-        // Populate session
         g_app.session.name = s_name_buf;
         g_app.session.tags.clear();
 
-        // Parse comma separated tags
+        // Parse comma-separated tags
         std::string tag_str = s_tag_buf;
         std::string token;
         for (char c : tag_str) {
             if (c == ',') {
-                // trim whitespace
                 size_t start = token.find_first_not_of(' ');
                 if (start != std::string::npos)
                     g_app.session.tags.push_back(token.substr(start));
@@ -94,16 +87,13 @@ void RenderSessionStart()
                 g_app.session.tags.push_back(token.substr(start));
         }
 
-        // Record start time
         g_app.session.unix_start =
             std::chrono::duration_cast<std::chrono::seconds>(
                 std::chrono::system_clock::now().time_since_epoch()).count();
 
         g_app.session.timer.Start();
-        g_app.mode = AppMode::Running;
-        SetWindowTopmost(true);
+        g_app.mode = AppMode::Running;  // main loop calls SetWindowMode
 
-        // Clear buffers for next time
         std::memset(s_name_buf, 0, sizeof(s_name_buf));
         std::memset(s_tag_buf,  0, sizeof(s_tag_buf));
     }
@@ -112,16 +102,10 @@ void RenderSessionStart()
         ImGui::EndDisabled();
         ImGui::TextDisabled("session name required");
     }
-
-    ImGui::End();
 }
 
 void RenderSessionActive()
 {
-    ImGui::SetNextWindowPos(ImVec2(200, 100), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(600, 500), ImGuiCond_Once);
-    ImGui::Begin("Session");
-
     ImGui::Text("Session: %s", g_app.session.name.c_str());
     ImGui::SameLine();
     ImGui::TextDisabled("[%s]", SectionName(g_app.session.current_section));
@@ -143,12 +127,10 @@ void RenderSessionActive()
     if (ImGui::Button("Lap (L)", ImVec2(100, 32)))
         g_app.session.timer.RecordLap();
 
-    bool is_paused = (g_app.mode == AppMode::Expanded)
-        ? g_app.mode_before_expand == AppMode::Paused
-        : g_app.mode == AppMode::Paused;
+    bool is_paused = g_app.mode_before_expand == AppMode::Paused;
 
     ImGui::SameLine();
-    const char* pause_label = (g_app.mode == AppMode::Paused) ? "Resume (P)" : "Pause (P)";
+    const char* pause_label = is_paused ? "Resume (P)" : "Pause (P)";
     if (ImGui::Button(pause_label, ImVec2(110, 32))) {
         if (is_paused) {
             g_app.session.timer.Resume();
@@ -158,14 +140,16 @@ void RenderSessionActive()
             g_app.mode_before_expand = AppMode::Paused;
         }
     }
+
     if (ImGui::Button("Minimize", ImVec2(100, 32)))
         ToggleExpanded();
 
     ImGui::SameLine();
     if (ImGui::Button("End Session", ImVec2(110, 32))) {
         g_app.session.timer.Pause();
-        g_app.mode = AppMode::Idle;
-        SetWindowTopmost(false);
+        g_app.session.timer.Reset();
+        g_app.session.timer.laps.clear();
+        g_app.mode = AppMode::Idle;  // main loop calls SetWindowMode
         // TODO: save session to disk
     }
 
@@ -173,17 +157,13 @@ void RenderSessionActive()
     ImGui::Separator();
     ImGui::Spacing();
 
-    // Lap list
     ImGui::PushFont(Theme::FontUIBold);
     ImGui::Text("Laps");
     ImGui::PopFont();
 
     ImGui::BeginChild("##laps", ImVec2(0, 0), true);
     const auto& laps = g_app.session.timer.laps;
-    for (int i = 0; i < (int)laps.size(); i++) {
+    for (int i = 0; i < (int)laps.size(); i++)
         ImGui::Text("Q%-3d  %s", i + 1, FormatTime(laps[i].duration_ms));
-    }
     ImGui::EndChild();
-
-    ImGui::End();
 }

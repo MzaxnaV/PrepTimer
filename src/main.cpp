@@ -1,10 +1,3 @@
-#include "imgui.h"
-#include "imgui_impl_dx11.h"
-#include "imgui_impl_win32.h"
-#include "implot.h"
-
-#include <windows.h>
-
 #include "renderer.h"
 #include "window.h"
 #include "ui/theme.h"
@@ -12,16 +5,21 @@
 #include "ui/session_view.h"
 #include "app.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
+#include "implot.h"
 
-    HWND hwnd = InitWindow(hInstance, 1280, 800, L"Prep Timer");
+#include <windows.h>
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
+{
+    // Create a minimal host window; SetWindowMode will size/show it
+    HWND hwnd = InitWindow(hInstance, 1, 1, L"Prep Timer");
 
     InitD3D(hwnd);
 
-    ShowWindow(hwnd, SW_SHOWDEFAULT);
-    UpdateWindow(hwnd);
-
-    // ImGui init
+    // ImGui init — no ViewportsEnable, everything lives in the single HWND
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     Theme::Apply();
@@ -30,15 +28,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
 
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
+    // Show at idle size
+    SetWindowMode(AppMode::Idle);
+
     // -----------------------------------------------------------------------
     // Main loop
     // -----------------------------------------------------------------------
-    bool done = false;
+    bool    done      = false;
+    AppMode last_mode = AppMode::Idle;
+
     while (!done) {
         MSG msg;
         while (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
@@ -49,6 +51,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         }
         if (done)
             break;
+
+        // Resize/restyle the window whenever mode changes
+        if (g_app.mode != last_mode) {
+            SetWindowMode(g_app.mode);
+            last_mode = g_app.mode;
+        }
 
         if (g_app.mode == AppMode::Running || g_app.mode == AppMode::Paused) {
             if (ImGui::IsKeyPressed(ImGuiKey_L, false))
@@ -70,22 +78,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        // ---- UI goes here ---------
-        if (g_app.mode == AppMode::Idle)
-            RenderSessionStart();
-        else if (g_app.mode == AppMode::Expanded)
-            RenderSessionActive();
-        RenderMiniWindow(); // TODO: remove later, just to verify everything works
-        // ---------------------------
+        // Tighter padding in mini mode so the timer text fits
+        bool isMini = (g_app.mode == AppMode::Running || g_app.mode == AppMode::Paused);
+        if (isMini)
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 8.0f));
+
+        // Single full-screen ImGui canvas — content switches with mode
+        ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_Always);
+        ImGui::Begin("##main", nullptr,
+            ImGuiWindowFlags_NoTitleBar            |
+            ImGuiWindowFlags_NoResize              |
+            ImGuiWindowFlags_NoMove                |
+            ImGuiWindowFlags_NoScrollbar           |
+            ImGuiWindowFlags_NoSavedSettings       |
+            ImGuiWindowFlags_NoBringToFrontOnFocus |
+            ImGuiWindowFlags_NoNav);
+
+        switch (g_app.mode) {
+            case AppMode::Idle:     RenderSessionStart();  break;
+            case AppMode::Running:
+            case AppMode::Paused:   RenderMiniContent();   break;
+            case AppMode::Expanded: RenderSessionActive(); break;
+        }
+
+        ImGui::End();
+
+        if (isMini)
+            ImGui::PopStyleVar();
 
         // Render
         ImGui::Render();
         BeginFrame(0.1f, 0.1f, 0.1f);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-        // Multi-viewport rendering
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
 
         GetContext()->OMSetRenderTargets(1, GetRenderTarget(), nullptr);
 
