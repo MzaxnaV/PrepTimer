@@ -17,8 +17,8 @@ void RenderMiniContent()
     ImGui::PushFont(Theme::FontUI);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8.0f);
     ImGui::TextDisabled("avg %s | %s",
-        FormatTime(g_app.session.timer.AverageLapMs()).data,
-        SectionName(g_app.session.current_section));
+                        FormatTime(g_app.session.timer.AverageLapMs()).data,
+                        SectionName(g_app.session.current_section));
     ImGui::PopFont();
 
     // Click anywhere on the mini strip to expand the session view

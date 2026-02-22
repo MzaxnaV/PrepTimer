@@ -1,13 +1,11 @@
 #include "renderer.h"
 
-static ID3D11Device*           g_pd3dDevice       = nullptr;
-static ID3D11DeviceContext*    g_pd3dDeviceContext = nullptr;
-static IDXGISwapChain*         g_pSwapChain        = nullptr;
-static ID3D11RenderTargetView* g_mainRenderTarget  = nullptr;
+static ID3D11Device* g_pd3dDevice                 = nullptr;
+static ID3D11DeviceContext* g_pd3dDeviceContext   = nullptr;
+static IDXGISwapChain* g_pSwapChain               = nullptr;
+static ID3D11RenderTargetView* g_mainRenderTarget = nullptr;
 
-// -----------------------------------------------------------------------
 // DX11 setup
-// -----------------------------------------------------------------------
 void CreateRenderTarget()
 {
     ID3D11Texture2D* pBackBuffer = nullptr;
@@ -57,16 +55,32 @@ void CleanupDeviceD3D()
     D3D_FEATURE_LEVEL featureLevel;
     constexpr D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0};
 
-    HRESULT res = D3D11CreateDeviceAndSwapChain(
-        nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
-        featureLevels, 2, D3D11_SDK_VERSION, &sd,
-        &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr,
+                                                D3D_DRIVER_TYPE_HARDWARE,
+                                                nullptr,
+                                                0,
+                                                featureLevels,
+                                                2,
+                                                D3D11_SDK_VERSION,
+                                                &sd,
+                                                &g_pSwapChain,
+                                                &g_pd3dDevice,
+                                                &featureLevel,
+                                                &g_pd3dDeviceContext);
 
     if (res == DXGI_ERROR_UNSUPPORTED)
-        res = D3D11CreateDeviceAndSwapChain(
-            nullptr, D3D_DRIVER_TYPE_WARP, nullptr, 0,
-            featureLevels, 2, D3D11_SDK_VERSION, &sd,
-            &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+        res = D3D11CreateDeviceAndSwapChain(nullptr,
+                                            D3D_DRIVER_TYPE_WARP,
+                                            nullptr,
+                                            0,
+                                            featureLevels,
+                                            2,
+                                            D3D11_SDK_VERSION,
+                                            &sd,
+                                            &g_pSwapChain,
+                                            &g_pd3dDevice,
+                                            &featureLevel,
+                                            &g_pd3dDeviceContext);
 
     if (res != S_OK)
         return false;
@@ -84,10 +98,7 @@ bool InitD3D(HWND hwnd)
     return true;
 }
 
-void ShutdownD3D()
-{
-    CleanupDeviceD3D();
-}
+void ShutdownD3D() { CleanupDeviceD3D(); }
 
 void BeginFrame(float r, float g, float b)
 {
@@ -108,6 +119,6 @@ void OnWindowResize(UINT width, UINT height)
     CreateRenderTarget();
 }
 
-ID3D11Device*            GetDevice()       { return g_pd3dDevice; }
-ID3D11DeviceContext*     GetContext()      { return g_pd3dDeviceContext; }
+ID3D11Device* GetDevice() { return g_pd3dDevice; }
+ID3D11DeviceContext* GetContext() { return g_pd3dDeviceContext; }
 ID3D11RenderTargetView** GetRenderTarget() { return &g_mainRenderTarget; }

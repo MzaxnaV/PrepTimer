@@ -18,17 +18,17 @@ struct Timer {
     void Resume();
     void Reset();
 
-    void RecordLap();        // saves current elapsed, resets for next question
+    void RecordLap(); // saves current elapsed, resets for next question
     // Returns elapsed time for current question in milliseconds
-    [[nodiscard]] uint32_t ElapsedMs()      const;
-    [[nodiscard]] uint32_t AverageLapMs()   const;
+    [[nodiscard]] uint32_t ElapsedMs() const;
+    [[nodiscard]] uint32_t AverageLapMs() const;
 
-private:
+  private:
     using Clock     = std::chrono::steady_clock;
     using TimePoint = std::chrono::time_point<Clock>;
 
     TimePoint m_start;
-    uint32_t  m_accumulated_ms = 0; // stores time across pause/resume
+    uint32_t m_accumulated_ms = 0; // stores time across pause/resume
 };
 
 // Small fixed-size stack buffer for short display strings.

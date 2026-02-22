@@ -14,20 +14,21 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
-    // Create a minimal host window; SetWindowMode will size/show it
     HWND hwnd = InitWindow(hInstance, 1, 1, L"Prep Timer");
     if (!hwnd)
         return 1;
 
     if (!InitD3D(hwnd)) {
-        MessageBoxW(nullptr, L"Failed to initialize Direct3D 11.", L"Prep Timer",
+        MessageBoxW(nullptr,
+                    L"Failed to initialize Direct3D 11.",
+                    L"Prep Timer",
                     MB_OK | MB_ICONERROR);
         DestroyWindow(hwnd);
         ShutdownWindow();
         return 1;
     }
 
-    // ImGui init — no ViewportsEnable, everything lives in the single HWND
+    // ImGui init
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     Theme::Apply();
@@ -40,13 +41,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(GetDevice(), GetContext());
 
-    // Show at idle size
     SetWindowMode(AppMode::Idle);
 
-    // -----------------------------------------------------------------------
     // Main loop
-    // -----------------------------------------------------------------------
-    bool    done      = false;
+    bool done         = false;
     AppMode last_mode = AppMode::Idle;
 
     while (!done) {
@@ -95,20 +93,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         // Single full-screen ImGui canvas — content switches with mode
         ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
         ImGui::SetNextWindowSize(io.DisplaySize, ImGuiCond_Always);
-        ImGui::Begin("##main", nullptr,
-            ImGuiWindowFlags_NoTitleBar            |
-            ImGuiWindowFlags_NoResize              |
-            ImGuiWindowFlags_NoMove                |
-            ImGuiWindowFlags_NoScrollbar           |
-            ImGuiWindowFlags_NoSavedSettings       |
-            ImGuiWindowFlags_NoBringToFrontOnFocus |
-            ImGuiWindowFlags_NoNav);
+        ImGui::Begin("##main",
+                     nullptr,
+                     ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                         ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+                         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus |
+                         ImGuiWindowFlags_NoNav);
 
         switch (g_app.mode) {
-            case AppMode::Idle:     RenderSessionStart();  break;
-            case AppMode::Running:
-            case AppMode::Paused:   RenderMiniContent();   break;
-            case AppMode::Expanded: RenderSessionActive(); break;
+        case AppMode::Idle:
+            RenderSessionStart();
+            break;
+        case AppMode::Running:
+        case AppMode::Paused:
+            RenderMiniContent();
+            break;
+        case AppMode::Expanded:
+            RenderSessionActive();
+            break;
         }
 
         ImGui::End();

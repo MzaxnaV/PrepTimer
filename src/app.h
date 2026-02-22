@@ -4,14 +4,14 @@
 #include "session.h"
 
 enum class AppMode {
-    Idle,       // no session running, mini window hidden
-    Running,    // session active, mini window visible
-    Paused,     // session paused, mini window visible
-    Expanded    // expanded window open
+    Idle,    // no session running, mini window hidden
+    Running, // session active, mini window visible
+    Paused,  // session paused, mini window visible
+    Expanded // expanded window open
 };
 
 struct AppState {
-    AppMode mode         = AppMode::Idle;
+    AppMode mode               = AppMode::Idle;
     AppMode mode_before_expand = AppMode::Idle;
     Session session;
 };

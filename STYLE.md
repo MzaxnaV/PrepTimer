@@ -7,15 +7,14 @@ conventions that clang-format cannot check.
 
 ## Naming
 
-| Category | Convention | Examples |
-|---|---|---|
-| Types, structs, enums | PascalCase | `Timer`, `AppMode`, `Section` |
-| Enum values | PascalCase | `AppMode::Idle`, `Section::None` |
-| Functions (free and member) | PascalCase | `SetWindowMode`, `RecordLap`, `FormatTime` |
-| Variables and struct members | snake_case | `running`, `current_section`, `target_ms` |
-| Private member variables | `m_` prefix | `m_start`, `m_accumulated_ms` |
-| Global state | `g_` prefix | `g_app`, `g_pd3dDevice`, `g_hwnd` |
-| Static-local persistent state | `s_` prefix | `s_name_buf`, `s_tag_buf` |
+| Category | Convention |
+|---|---|
+| Types, structs, enums | PascalCase |
+| Enum values | PascalCase |
+| Functions | PascalCase |
+| Variables and struct members | snake_case |
+| Global state | `g_` prefix |
+| Static-local persistent state | `s_` prefix |
 
 ---
 

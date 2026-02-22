@@ -4,13 +4,13 @@
 #include "imgui.h"
 
 namespace Theme {
-    // Call once after ImGui::CreateContext()
-    void Apply();
+// Call once after ImGui::CreateContext()
+void Apply();
 
-    // Fonts — access these to push/pop in specific widgets
-    extern ImFont* FontUI;        // Inter Regular — general UI
-    extern ImFont* FontUIBold;    // Inter Bold — labels, headings
-    extern ImFont* FontTimer;     // JetBrains Mono — timer display
-}
+// Fonts — access these to push/pop in specific widgets
+extern ImFont* FontUI;     // Inter Regular — general UI
+extern ImFont* FontUIBold; // Inter Bold — labels, headings
+extern ImFont* FontTimer;  // JetBrains Mono — timer display
+} // namespace Theme
 
 #endif // THEME_HPP_

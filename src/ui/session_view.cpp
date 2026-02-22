@@ -35,13 +35,17 @@ void RenderSessionStart()
     ImGui::PopFont();
 
     Section& sec = g_app.session.current_section;
-    if (ImGui::RadioButton("None",  sec == Section::None))  sec = Section::None;
+    if (ImGui::RadioButton("None", sec == Section::None))
+        sec = Section::None;
     ImGui::SameLine();
-    if (ImGui::RadioButton("QA",    sec == Section::QA))    sec = Section::QA;
+    if (ImGui::RadioButton("AAA", sec == Section::AAA))
+        sec = Section::AAA;
     ImGui::SameLine();
-    if (ImGui::RadioButton("DILR",  sec == Section::DILR))  sec = Section::DILR;
+    if (ImGui::RadioButton("BBB", sec == Section::BBB))
+        sec = Section::BBB;
     ImGui::SameLine();
-    if (ImGui::RadioButton("VARC",  sec == Section::VARC))  sec = Section::VARC;
+    if (ImGui::RadioButton("CCC", sec == Section::CCC))
+        sec = Section::CCC;
 
     ImGui::Spacing();
     ImGui::Separator();
@@ -54,15 +58,18 @@ void RenderSessionStart()
     int target_s = static_cast<int>(g_app.session.target_ms / 1000);
     ImGui::SetNextItemWidth(120);
     if (ImGui::InputInt("seconds##target", &target_s)) {
-        if (target_s < 10)  target_s = 10;   // minimum 10 seconds
-        if (target_s > 600) target_s = 600;  // maximum 10 minutes
+        if (target_s < 10)
+            target_s = 10; // minimum 10 seconds
+        if (target_s > 600)
+            target_s = 600; // maximum 10 minutes
         g_app.session.target_ms = static_cast<uint32_t>(target_s * 1000);
     }
 
     ImGui::Spacing();
 
     bool can_start = s_name_buf[0] != '\0';
-    if (!can_start) ImGui::BeginDisabled();
+    if (!can_start)
+        ImGui::BeginDisabled();
 
     if (ImGui::Button("Start Session", ImVec2(-1, 36))) {
         g_app.session.name = s_name_buf;
@@ -71,27 +78,30 @@ void RenderSessionStart()
         // Parse comma-separated tags, trimming leading and trailing spaces
         const char* p = s_tag_buf;
         while (*p) {
-            while (*p == ' ') ++p;              // skip leading spaces
+            while (*p == ' ')
+                ++p; // skip leading spaces
             const char* tok_start = p;
             const char* tok_end   = p;
             while (*p && *p != ',') {
-                if (*p != ' ') tok_end = p + 1; // track last non-space
+                if (*p != ' ')
+                    tok_end = p + 1; // track last non-space
                 ++p;
             }
             if (tok_end > tok_start)
                 g_app.session.tags.emplace_back(tok_start, tok_end);
-            if (*p == ',') ++p;
+            if (*p == ',')
+                ++p;
         }
 
-        g_app.session.unix_start =
-            std::chrono::duration_cast<std::chrono::seconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count();
+        g_app.session.unix_start = std::chrono::duration_cast<std::chrono::seconds>(
+                                       std::chrono::system_clock::now().time_since_epoch())
+                                       .count();
 
         g_app.session.timer.Start();
-        g_app.mode = AppMode::Running;  // main loop calls SetWindowMode
+        g_app.mode = AppMode::Running; // main loop calls SetWindowMode
 
         std::memset(s_name_buf, 0, sizeof(s_name_buf));
-        std::memset(s_tag_buf,  0, sizeof(s_tag_buf));
+        std::memset(s_tag_buf, 0, sizeof(s_tag_buf));
     }
 
     if (!can_start) {
@@ -144,7 +154,7 @@ void RenderSessionActive()
     if (ImGui::Button("End Session", ImVec2(110, 32))) {
         g_app.session.timer.Reset();
         g_app.session.timer.laps.clear();
-        g_app.mode = AppMode::Idle;  // main loop calls SetWindowMode
+        g_app.mode = AppMode::Idle; // main loop calls SetWindowMode
         // TODO: save session to disk
     }
 

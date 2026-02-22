@@ -3,9 +3,13 @@
 const char* SectionName(Section s)
 {
     switch (s) {
-    case Section::QA:   return "QA";
-    case Section::DILR: return "DILR";
-    case Section::VARC: return "VARC";
-    default:            return "None";
+    case Section::AAA:
+        return "AAA";
+    case Section::BBB:
+        return "BBB";
+    case Section::CCC:
+        return "CCC";
+    default:
+        return "None";
     }
 }

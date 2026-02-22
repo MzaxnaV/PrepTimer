@@ -9,7 +9,7 @@ void BeginFrame(float r, float g, float b);
 void OnWindowResize(UINT width, UINT height);
 void EndFrame();
 
-ID3D11Device*        GetDevice();
+ID3D11Device* GetDevice();
 ID3D11DeviceContext* GetContext();
 ID3D11RenderTargetView** GetRenderTarget();
 
