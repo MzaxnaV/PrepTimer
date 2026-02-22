@@ -16,8 +16,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
     // Create a minimal host window; SetWindowMode will size/show it
     HWND hwnd = InitWindow(hInstance, 1, 1, L"Prep Timer");
+    if (!hwnd)
+        return 1;
 
-    InitD3D(hwnd);
+    if (!InitD3D(hwnd)) {
+        MessageBoxW(nullptr, L"Failed to initialize Direct3D 11.", L"Prep Timer",
+                    MB_OK | MB_ICONERROR);
+        DestroyWindow(hwnd);
+        ShutdownWindow();
+        return 1;
+    }
 
     // ImGui init — no ViewportsEnable, everything lives in the single HWND
     IMGUI_CHECKVERSION();
@@ -58,6 +66,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
             last_mode = g_app.mode;
         }
 
+        // Start ImGui frame
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        // Process hotkeys — must be after NewFrame so IsKeyPressed reads current-frame IO
         if (g_app.mode == AppMode::Running || g_app.mode == AppMode::Paused) {
             if (ImGui::IsKeyPressed(ImGuiKey_L, false))
                 g_app.session.timer.RecordLap();
@@ -72,11 +86,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
                 }
             }
         }
-
-        // Start ImGui frame
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
 
         // Tighter padding in mini mode so the timer text fits
         bool isMini = (g_app.mode == AppMode::Running || g_app.mode == AppMode::Paused);
@@ -111,9 +120,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         ImGui::Render();
         BeginFrame(0.1f, 0.1f, 0.1f);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-        GetContext()->OMSetRenderTargets(1, GetRenderTarget(), nullptr);
-
         EndFrame();
     }
 

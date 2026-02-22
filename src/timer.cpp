@@ -1,26 +1,30 @@
-
 #include "timer.h"
+
 #include <cstdio>
 
-void Timer::Start() {
+void Timer::Start()
+{
     m_accumulated_ms = 0;
     m_start  = Clock::now();
     running  = true;
 }
 
-void Timer::Pause() {
+void Timer::Pause()
+{
     if (!running) return;
     m_accumulated_ms = ElapsedMs();
     running = false;
 }
 
-void Timer::Resume() {
+void Timer::Resume()
+{
     if (running) return;
     m_start = Clock::now();
     running = true;
 }
 
-void Timer::Reset() {
+void Timer::Reset()
+{
     running          = false;
     m_accumulated_ms = 0;
 }
@@ -28,12 +32,15 @@ void Timer::Reset() {
 void Timer::RecordLap()
 {
     if (!running) return;
-    laps.push_back({ ElapsedMs() });
+    auto now     = Clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_start);
+    laps.push_back({ m_accumulated_ms + static_cast<uint32_t>(elapsed.count()) });
     m_accumulated_ms = 0;
-    m_start = Clock::now();      // reset for next question
+    m_start          = now;   // next question starts at the exact same instant
 }
 
-uint32_t Timer::ElapsedMs() const {
+uint32_t Timer::ElapsedMs() const
+{
     if (!running)
         return m_accumulated_ms;
 
@@ -51,7 +58,8 @@ uint32_t Timer::AverageLapMs() const
     return total / static_cast<uint32_t>(laps.size());
 }
 
-const char* FormatTime(uint32_t ms) {
+const char* FormatTime(uint32_t ms)
+{
     static char buf[16];
     uint32_t total_s = ms / 1000;
     uint32_t minutes = total_s / 60;

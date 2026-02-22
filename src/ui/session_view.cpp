@@ -51,12 +51,12 @@ void RenderSessionStart()
     ImGui::Text("Target per question");
     ImGui::PopFont();
 
-    int target_s = (int)(g_app.session.target_ms / 1000);
+    int target_s = static_cast<int>(g_app.session.target_ms / 1000);
     ImGui::SetNextItemWidth(120);
     if (ImGui::InputInt("seconds##target", &target_s)) {
         if (target_s < 10)  target_s = 10;   // minimum 10 seconds
         if (target_s > 600) target_s = 600;  // maximum 10 minutes
-        g_app.session.target_ms = (uint32_t)(target_s * 1000);
+        g_app.session.target_ms = static_cast<uint32_t>(target_s * 1000);
     }
 
     ImGui::Spacing();
@@ -68,23 +68,19 @@ void RenderSessionStart()
         g_app.session.name = s_name_buf;
         g_app.session.tags.clear();
 
-        // Parse comma-separated tags
-        std::string tag_str = s_tag_buf;
-        std::string token;
-        for (char c : tag_str) {
-            if (c == ',') {
-                size_t start = token.find_first_not_of(' ');
-                if (start != std::string::npos)
-                    g_app.session.tags.push_back(token.substr(start));
-                token.clear();
-            } else {
-                token += c;
+        // Parse comma-separated tags, trimming leading and trailing spaces
+        const char* p = s_tag_buf;
+        while (*p) {
+            while (*p == ' ') ++p;              // skip leading spaces
+            const char* tok_start = p;
+            const char* tok_end   = p;
+            while (*p && *p != ',') {
+                if (*p != ' ') tok_end = p + 1; // track last non-space
+                ++p;
             }
-        }
-        if (!token.empty()) {
-            size_t start = token.find_first_not_of(' ');
-            if (start != std::string::npos)
-                g_app.session.tags.push_back(token.substr(start));
+            if (tok_end > tok_start)
+                g_app.session.tags.emplace_back(tok_start, tok_end);
+            if (*p == ',') ++p;
         }
 
         g_app.session.unix_start =
@@ -146,7 +142,6 @@ void RenderSessionActive()
 
     ImGui::SameLine();
     if (ImGui::Button("End Session", ImVec2(110, 32))) {
-        g_app.session.timer.Pause();
         g_app.session.timer.Reset();
         g_app.session.timer.laps.clear();
         g_app.mode = AppMode::Idle;  // main loop calls SetWindowMode
@@ -163,7 +158,7 @@ void RenderSessionActive()
 
     ImGui::BeginChild("##laps", ImVec2(0, 0), true);
     const auto& laps = g_app.session.timer.laps;
-    for (int i = 0; i < (int)laps.size(); i++)
+    for (int i = 0; i < static_cast<int>(laps.size()); i++)
         ImGui::Text("Q%-3d  %s", i + 1, FormatTime(laps[i].duration_ms));
     ImGui::EndChild();
 }

@@ -1,4 +1,73 @@
 BasedOnStyle: LLVM
-IndentWidth: 4
+Language: Cpp
+
+# Indentation
+IndentWidth:            4
+UseTab:                 Never
+TabWidth:               4
+ContinuationIndentWidth: 4
+
+# Line length
 ColumnLimit: 100
-PointerAlignment: Left
+
+# Braces: Allman for functions/structs/classes, K&R for control flow
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction:         true
+  AfterControlStatement: false   # K&R: if (...) {
+  AfterClass:            false   # K&R: struct Foo {
+  AfterStruct:           false
+  AfterEnum:             false
+  AfterNamespace:        false   # K&R: namespace Foo {
+  AfterUnion:            false
+  BeforeElse:            false
+  BeforeCatch:           false
+  IndentBraces:          false
+  SplitEmptyFunction:    false
+  SplitEmptyRecord:      false
+  SplitEmptyNamespace:   false
+
+# Short functions: allow one-liners only for trivial getters (same-line brace)
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine:       false
+AllowShortCaseLabelsOnASingleLine:  false
+
+# Pointers and references: int* p, not int *p
+PointerAlignment:   Left
+ReferenceAlignment: Left
+
+# Alignment
+AlignTrailingComments:
+  Kind:           Always
+  OverEmptyLines: 0
+AlignConsecutiveAssignments:
+  Enabled:           true
+  AcrossEmptyLines:  false
+  AcrossComments:    false
+  AlignCompound:     false
+AlignConsecutiveDeclarations:
+  Enabled:           false
+AlignConsecutiveMacros:
+  Enabled:           true
+  AcrossEmptyLines:  false
+  AcrossComments:    false
+
+# Function call / declaration wrapping
+AlignAfterOpenBracket:        Align
+BinPackArguments:             false
+BinPackParameters:            false
+AllowAllArgumentsOnNextLine:  false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# Includes: preserve our manual grouping (own -> project -> third-party -> system)
+SortIncludes:   Never
+IncludeBlocks:  Preserve
+
+# Spacing
+SpaceBeforeParens:          ControlStatements
+SpaceBeforeCpp11BracedList: false
+SpacesInAngles:             Never
+SpacesInParens:             Never
+SpacesInSquareBrackets:     false
+SpaceAfterCStyleCast:       false
